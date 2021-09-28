@@ -1,0 +1,21 @@
+.site-layout-background {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  height: 64px;
+  padding: 40px;
+}
+.site-layout-background .titlename {
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+  font-weight: bold;
+}
+.site-layout-background .climate .far {
+  padding-right: 15px;
+}
+.site-layout-background .climate .user-login {
+  float: right;
+  margin-left: 30px;
+}

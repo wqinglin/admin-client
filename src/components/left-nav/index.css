@@ -1,0 +1,19 @@
+.left-nav {
+  color: #fff;
+}
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1f1c2e;
+  overflow: hidden;
+}
+.logo img {
+  width: 32px;
+  height: 32px;
+}
+.logo .title {
+  font-size: 18px;
+  color: #fff;
+}
