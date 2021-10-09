@@ -12,9 +12,10 @@ export default class AddForm extends Component {
         parentId: PropTypes.string.isRequired, //父分类Id
         setForm: PropTypes.func.isRequired, //父传子回调函数
     }
+
     handleChange = () => {
-        console.log(this.formRef.current.getFieldsValue());
-        this.props.setForm(this.formRef.current.getFieldsValue())
+        // console.log(this.formRef.current.getFieldsValue());
+        this.props.setForm(this.formRef.current)
     }
     render() {
         const { categoryList, parentId } = this.props

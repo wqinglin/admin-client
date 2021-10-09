@@ -28,7 +28,7 @@ class UpdateCategory extends Component {
                     rules={[
                         {
                             required: true,
-                            message: '请输入需要修改分类的名称!'
+                            message: '请输入需要修改分类的名称'
                         },
                     ]}
                 >

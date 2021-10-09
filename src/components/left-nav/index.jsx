@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Link,withRouter } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import menuList from '../../config/menuCofig'
 
 import './index.less'
@@ -44,9 +44,9 @@ class LeftNav extends Component {
             } else {
                 const path = this.props.location.pathname
                 //查找一个与当前路径匹配的子cItem
-                const cItem = item.children.find(cItem => cItem.key === path)
-               //如果存在，说明当前Item的子列表需要打开
-                if(cItem){
+                const cItem = item.children.find(cItem => path.indexOf(cItem.key) === 0)
+                //如果存在，说明当前Item的子列表需要打开
+                if (cItem) {
                     this.openKeys = item.key
                 }
 
@@ -59,14 +59,18 @@ class LeftNav extends Component {
             return pre
         }, [])
     }
-    UNSAFE_componentWillMount(){
+    UNSAFE_componentWillMount() {
         this.MenuNodes = this.getMenuNodes(menuList)
     }
 
     render() {
         //得到当前请求的路由路径
-       const path = this.props.location.pathname
-       const openKeys = this.openKeys
+        let path = this.props.location.pathname
+        //当前请求的是商品或子路由的路径
+        if (path.indexOf('/product/product') === 0) {
+            path = '/product/product'
+        }
+        const openKeys = this.openKeys
         return (
             <div className="left-nav">
                 <Link className="logo" to='/' >
@@ -80,7 +84,7 @@ class LeftNav extends Component {
                     theme="dark"
                 >
                     {
-                         this.MenuNodes
+                        this.MenuNodes
                     }
                 </Menu>
             </div>

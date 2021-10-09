@@ -3,7 +3,6 @@ import { Card, Button, Table, message, Modal } from 'antd';
 import LinkButton from '../../components/link-button'
 import { reqCatagory, reqAddCategory, reqUpdateCategory } from '../../api/index'
 import { PlusSquareOutlined, ArrowRightOutlined } from '@ant-design/icons'
-import './category.less'
 import AddForm from './add-form'
 import UpdateForm from './update-form'
 export default class Category extends Component {
@@ -17,10 +16,11 @@ export default class Category extends Component {
     }
 
     //分情况获取一级或二级分类列表数据
-    getCategoryList = async () => {
+    //ParentId:请求，如果制定了更具指定的请求
+    getCategoryList = async (parentid) => {
         // 发请求前,显示loading
         this.setState({ loading: true })
-        const parentId = this.state.parentId
+        const parentId = parentid || this.state.parentId
         //获取一级分类列表数据
         const result = await reqCatagory(parentId)
         //请求完成,隐藏loading
@@ -81,28 +81,31 @@ export default class Category extends Component {
 
     //模态框确认按钮
     addCategory = async () => {
-        this.setState({
-            ModalVisible: 0
-        })
-        const { parentId, categoryName } = this.addform
-        console.log(parentId,categoryName);
-        //收集数据,添加分类请求
-        const result = await reqAddCategory(parentId, categoryName)
-        console.log('**',result);
-        // if (result.status === 0) {
-        //     //添加的分类就是当前分类列表下的分类
-        //     if (parentId === this.state.parentId)
-        //         this.getCategoryList()
-        //     //在二级分类列表下添加一级列表,重新获取一级列表，但是不需要显示
-        // } else if (parentId === 0) {
-        //     this.getCategoryList('0')
-        // }
-
+        try {
+            const { parentId, categoryName } = await this.addform.validateFields()
+            this.setState({
+                ModalVisible: 0
+            })
+            //收集数据,添加分类请求
+            const result = await reqAddCategory(parentId, categoryName)
+            console.log('*', result);
+            if (result.status === 0) {
+                //添加的分类就是当前分类列表下的分类
+                if (parentId === this.state.parentId) {
+                    //重新获取当前分类列表
+                    this.getCategoryList()
+                    //在二级分类列表下添加一级列表,重新获取一级列表，但是不需要显示
+                } else if (parentId === '0') {
+                    this.getCategoryList('0')
+                }
+            }
+        } catch (error) {
+            message.error('请输入内容')
+        }
         //重新获取分类列表显示
     }
     //关闭模态框
     handleCancel = () => {
-        //清除输入数据
         // 隐藏确认
         this.setState({
             ModalVisible: 0
@@ -110,20 +113,25 @@ export default class Category extends Component {
     }
     // 更新分类模态框
     updateCategory = async () => {
-        //1.隐藏确认框
-        this.setState({
-            ModalVisible: 0
-        })
-        //准备数据
-        const categoryId = this.categoryOne._id
-        const categoryName = this.updateform.getFieldValue('categoryName')
-        //2.发送请求更新分类
-        const result = await reqUpdateCategory(categoryId, categoryName)
-        if (result.status === 0) {
-            //3.重新定义列表
-            this.getCategoryList()
+        try {
+            //先要进行表单验证
+            const { categoryName } = await this.updateform.validateFields()
+            //1.隐藏确认框
+            this.setState({
+                ModalVisible: 0
+            })
+            //准备数据
+            const categoryId = this.categoryOne._id
+            // const categoryName = this.updateform.getFieldValue('categoryName')
+            //2.发送请求更新分类
+            const result = await reqUpdateCategory(categoryId, categoryName)
+            if (result.status === 0) {
+                //3.重新定义列表
+                this.getCategoryList()
+            }
+        } catch (error) {
+            message.error('修改内容不能为空')
         }
-
     }
     initColumns = () => {
         this.columns = [
@@ -135,6 +143,7 @@ export default class Category extends Component {
             {
                 title: '操作',
                 width: 400,
+                //没有指定dataIndex
                 render: (categoryList) => ( //返回需要显示的界面标签
                     <span>
                         <LinkButton onClick={() => this.showUpdateModel(categoryList)}>修改分类</LinkButton>
@@ -174,8 +183,8 @@ export default class Category extends Component {
         return (
             <div>
                 <Card title={title} extra={extra} className='card'>
-                    <Table rowKey='_id' dataSource={parentId === '0' ? categoryList : subCategoryList} columns={this.columns} bordered
-                        pagination={{ defaultPageSize: 5, showQuickJumper: true, loading: { loading } }} />
+                    <Table rowKey='_id' dataSource={parentId === '0' ? categoryList : subCategoryList} columns={this.columns} bordered 
+                     loading={loading}   pagination={{ defaultPageSize: 5, showQuickJumper: true }} />
                 </Card>
 
                 <Modal title="添加分类" visible={ModalVisible === 1} onOk={this.addCategory} onCancel={this.handleCancel} destroyOnClose={true}>

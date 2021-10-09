@@ -1,0 +1,14 @@
+.item {
+  display: block;
+}
+.item .left {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.item .product-img {
+  width: 150px;
+  height: 150px;
+  margin-right: 20px;
+  border: #c9c6c6 1px solid;
+}
